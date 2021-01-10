@@ -1,4 +1,4 @@
-import { WorkerHandlers } from "@watchedcom/sdk";
+import { WorkerHandlers } from "@mediaurl/sdk";
 import { parseList, parseItem } from "./ted-scraper";
 import * as qs from "qs";
 
