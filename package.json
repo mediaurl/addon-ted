@@ -8,8 +8,7 @@
     "develop": "ts-node-dev --transpile-only --no-notify src"
   },
   "dependencies": {
-    "@mediaurl/redis-cache": "1.0.0-alpha.3",
-    "@mediaurl/sdk": "1.0.0-alpha.3",
+    "@mediaurl/sdk": "^1.0.1",
     "cheerio": "0.22.0",
     "qs": "6.9.4"
   },
