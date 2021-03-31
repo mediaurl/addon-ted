@@ -1,11 +1,8 @@
-import { WorkerHandlers } from "@mediaurl/sdk";
-import { parseList, parseItem } from "./ted-scraper";
+import { ActionHandlers } from "@mediaurl/sdk";
 import * as qs from "qs";
+import { parseItem, parseList } from "./ted-scraper";
 
-export const directoryHandler: WorkerHandlers["directory"] = async (
-    input,
-    ctx
-) => {
+export const catalogHandler: ActionHandlers["catalog"] = async (input, ctx) => {
     await ctx.requestCache([input.search, input.filter, input.cursor], {
         ttl: Infinity,
         refreshInterval: "1h",
@@ -85,7 +82,7 @@ export const directoryHandler: WorkerHandlers["directory"] = async (
     };
 };
 
-export const itemHandler: WorkerHandlers["item"] = async (input, ctx) => {
+export const itemHandler: ActionHandlers["item"] = async (input, ctx) => {
     // await ctx.requestCache([input.ids.id, input.name], {
     //     ttl: Infinity,
     //     refreshInterval: "1h",
