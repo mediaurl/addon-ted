@@ -20,6 +20,46 @@ interface ExtendedTedItem {
     };
 }
 
+interface TedPlayerData {
+    id: string;
+    thumb: string;
+    languages: {
+        languageName: string;
+        languageCode: string;
+    }[];
+    nativeLanguage: string;
+    resources: {
+        h264: {
+            bitrate: number;
+            file: string;
+        }[];
+    };
+}
+
+interface TedImage {
+    __typename: "Image";
+    url: string;
+}
+
+interface TedSpeaker {
+    __typename: "Speaker";
+    firstName: string;
+    lastName: string;
+}
+
+interface TedVideoItem {
+    __typename: "Video";
+    id: string;
+    slug: string;
+    title: string;
+    description: string;
+    duration: number;
+    publishedAt: string;
+    primaryImageSet: TedImage[];
+    speakers: TedSpeaker[];
+    playerData: TedPlayerData;
+}
+
 export const parseList = async (html: string): Promise<TedItem[]> => {
     const results: TedItem[] = [];
 
@@ -27,10 +67,9 @@ export const parseList = async (html: string): Promise<TedItem[]> => {
 
     $("div.talk-link").each((index, elem) => {
         const mediaMessageNode = $(elem).find(".media__message").first();
-        const thumbnail = ($(elem)
-            .find("img.thumb__image")
-            .first()
-            .attr("src") as string)
+        const thumbnail = (
+            $(elem).find("img.thumb__image").first().attr("src") as string
+        )
             .split("?")
             .shift();
 
@@ -47,33 +86,15 @@ export const parseList = async (html: string): Promise<TedItem[]> => {
     return results;
 };
 
-export const parseItem = async (
-    html: string
-): Promise<TedItem & ExtendedTedItem> => {
+export const parseItem = async (html: string): Promise<TedVideoItem> => {
     const $ = cheerio.load(html);
 
-    const scriptData = $("script[data-spec=q]").first().html();
+    const scriptData = $("script#__NEXT_DATA__").first().html();
 
     const dataObj = /{.*}/.exec(<string>scriptData);
     const parsed = JSON.parse((dataObj || [])[0]);
-    const initialData = parsed?.__INITIAL_DATA__;
 
-    if (!initialData) {
-        throw new Error("Unable to extract data object");
-    }
+    const videoData = parsed.props.pageProps.videoData;
 
-    const firstTalk = initialData.talks[0];
-
-    return {
-        title: firstTalk.title,
-        description: firstTalk.description,
-        speaker: ["firstname", "lastname"]
-            .map((_) => firstTalk.speakers[0][_])
-            .filter((_) => _)
-            .join(" "),
-        link: initialData.url,
-        thumbnail: firstTalk.hero,
-        downloads: firstTalk.downloads,
-        recorded: firstTalk.recoded_at,
-    };
+    return { ...videoData, playerData: JSON.parse(videoData.playerData) };
 };

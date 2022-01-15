@@ -64,15 +64,15 @@ export const itemHandler: ActionHandlers["item"] = async (input, ctx) => {
         ids: input.ids,
         name: input.name || result.title,
         description: result.description,
-        releaseDate: result.recorded,
+        releaseDate: result.publishedAt,
         sources: [
             {
                 type: "url",
-                url: `https://hls.ted.com/talks/${result.downloads.id}.m3u8`,
+                url: result.playerData.resources.h264[0].file,
             },
         ],
         images: {
-            poster: result.thumbnail,
+            poster: result.playerData.thumb,
         },
     };
 };
